@@ -11,10 +11,12 @@ const { check, query } = require("express-validator");
 const { fieldsValidator } = require("../middlewares/fields-validator");
 const {
 	isRoleValid,
-	emailExist,
+	emailRegisterExist,
 	userExist,
-	userIsActive,
+	userIsActiveById,
+	isAdminRole,
 } = require("../helpers/db-validators");
+const { validateJwt } = require("../middlewares/validate-jwt");
 
 const router = Router();
 
@@ -22,6 +24,7 @@ const router = Router();
 router.get(
 	"/",
 	[
+		validateJwt,
 		query("limit", "Limit must be a number").if(
 			query("limit").notEmpty().isNumeric({ no_symbols: false })
 		),
@@ -41,7 +44,7 @@ router.post(
 			.isEmpty()
 			.trim()
 			.isEmail()
-			.custom(emailExist),
+			.custom(emailRegisterExist),
 		check("name", "El Nombre es obligatorio.")
 			.not()
 			.isEmpty()
@@ -66,10 +69,11 @@ router.post(
 router.put(
 	"/:id",
 	[
+		validateJwt,
 		check("id", "Debe ser un id válido.")
 			.isMongoId()
 			.custom(userExist)
-			.custom(userIsActive),
+			.custom(userIsActiveById),
 		check("name", "El Nombre es obligatorio.").if(
 			check("lastName").notEmpty().trim().isLength({ min: 3, max: 30 })
 		),
@@ -90,10 +94,12 @@ router.put(
 router.delete(
 	"/:id",
 	[
+		validateJwt,
 		check("id", "Debe ser un id válido.")
 			.isMongoId()
 			.custom(userExist)
-			.custom(userIsActive),
+			.custom(userIsActiveById)
+			.custom(isAdminRole),
 		fieldsValidator,
 	],
 	usersDeleteController
