@@ -9,7 +9,13 @@ const isRoleValid = async role => {
 	}
 };
 
-const emailExist = async email => {
+const isAdminRole = role => {
+	if (role !== "ADMIN") {
+		throw new Error(`You do not have permission to do this action.`);
+	}
+};
+
+const emailRegisterExist = async email => {
 	//Verify if email is already in use
 	const emailExist = await User.findOne({ email });
 
@@ -27,7 +33,16 @@ const userExist = async id => {
 	}
 };
 
-const userIsActive = async id => {
+const emailLoginExist = async email => {
+	// Verify if user exist
+	const loggedUser = await User.findOne({ email });
+
+	if (!loggedUser) {
+		throw new Error("Credentials are not correct - email.");
+	}
+};
+
+const userIsActiveById = async id => {
 	//Verify if email is already in use
 	const { status } = await User.findById(id);
 
@@ -36,4 +51,34 @@ const userIsActive = async id => {
 	}
 };
 
-module.exports = { isRoleValid, emailExist, userExist, userIsActive };
+const userIsActiveByEmail = async email => {
+	//Verify if email is already in use
+	const { status } = await User.findOne({ email });
+
+	if (!status) {
+		throw new Error("User does not exist ;-).");
+	}
+};
+
+const userStatusIsActive = async email => {
+	// Verify if user is active
+
+	const { status } = await User.findOne({ email });
+
+	if (!status) {
+		return res.status(401).json({
+			msg: "Credentials are not correct - email.",
+		});
+	}
+};
+
+module.exports = {
+	isRoleValid,
+	userExist,
+	userIsActiveByEmail,
+	userIsActiveById,
+	emailRegisterExist,
+	emailLoginExist,
+	userStatusIsActive,
+	isAdminRole,
+};

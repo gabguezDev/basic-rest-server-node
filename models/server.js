@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const router = require("../routes/users.routes");
+const usersRouter = require("../routes/users.routes");
+const authRouter = require("../routes/auth.routes");
 const { dbConnection } = require("../database/config");
 
 class Server {
@@ -13,6 +14,7 @@ class Server {
 		//API Routes
 		this.apiRoutes = {
 			users: "/api/users",
+			auth: "/api/auth",
 		};
 
 		this.connectDb();
@@ -35,7 +37,8 @@ class Server {
 	}
 
 	routes() {
-		this.app.use(this.apiRoutes.users, router);
+		this.app.use(this.apiRoutes.users, usersRouter);
+		this.app.use(this.apiRoutes.auth, authRouter);
 	}
 
 	listen() {
