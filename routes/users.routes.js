@@ -1,10 +1,11 @@
 const { Router } = require("express");
 
 const {
-	usersGetController,
-	usersPostController,
-	usersPutController,
-	usersDeleteController,
+	getUsersController,
+	getUserByIdController,
+	createUserController,
+	updateUserController,
+	deleteUserController,
 } = require("../controllers/users.controller");
 
 const { check, query } = require("express-validator");
@@ -33,7 +34,7 @@ router.get(
 		),
 		fieldsValidator,
 	],
-	usersGetController
+	getUsersController
 );
 
 router.post(
@@ -63,7 +64,7 @@ router.post(
 		check("role", "Role must exist.").not().isEmpty().custom(isRoleValid),
 		fieldsValidator,
 	],
-	usersPostController
+	createUserController
 );
 
 router.put(
@@ -88,7 +89,21 @@ router.put(
 		),
 		fieldsValidator,
 	],
-	usersPutController
+	updateUserController
+);
+
+router.get(
+	"/:id",
+	[
+		validateJwt,
+		check("id", "Debe ser un id válido.")
+			.isMongoId()
+			.custom(userExist)
+			.custom(userIsActiveById),
+		// .custom(isAdminRole)
+		fieldsValidator,
+	],
+	getUserByIdController
 );
 
 router.delete(
@@ -102,7 +117,7 @@ router.delete(
 			.custom(isAdminRole),
 		fieldsValidator,
 	],
-	usersDeleteController
+	deleteUserController
 );
 
 module.exports = router;

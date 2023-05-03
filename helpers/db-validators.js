@@ -1,6 +1,8 @@
 const Role = require("../models/role");
 const User = require("../models/user");
 
+const jwt = require("jsonwebtoken");
+
 const isRoleValid = async role => {
 	const roleExist = await Role.findOne({ role });
 
@@ -9,7 +11,15 @@ const isRoleValid = async role => {
 	}
 };
 
-const isAdminRole = role => {
+const isAdminRole = async token => {
+	const { uid: _id } = jwt.decode(token);
+
+	const { role } = await User.findById({ _id, status: true });
+
+	if (role === null || role === undefined) {
+		throw new Error(`User does not exist.`);
+	}
+
 	if (role !== "ADMIN") {
 		throw new Error(`You do not have permission to do this action.`);
 	}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Google Sign-in</title>
+	</head>
+	<body>
+		<div
+			id="g_id_onload"
+			data-client_id="1033230261454-ttnv0ntg0634i6gvp1q6n90ta3p6e256.apps.googleusercontent.com"
+			data-context="signin"
+			data-auto_prompt="false"
+			data-ux_mode="popup"
+			data-callback="handleCredentialResponse"
+			data-close_on_tap_outside="false"
+			data-itp_support="true"
+		></div>
+
+		<div
+			class="g_id_signin"
+			data-type="standard"
+			data-shape="rectangular"
+			data-theme="outline"
+			data-text="signin_with"
+			data-size="large"
+			data-logo_alignment="left"
+			data-width="100"
+		></div>
+
+		<script>
+			function handleCredentialResponse(response) {
+				const payload = response.credential;
+
+				const body = { id_token: payload };
+
+				fetch("http://localhost:3000/api/auth/google", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(body),
+				})
+					.then(res => res.json())
+					.then(resp => {
+						return resp;
+					})
+					.catch(err => {
+						return err;
+					});
+			}
+		</script>
+		<script src="https://accounts.google.com/gsi/client" async defer></script>
+	</body>
+</html>
