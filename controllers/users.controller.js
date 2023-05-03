@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 
 // Filter by active users
 
-const usersGetController = async (req, res = response) => {
+const getUsersController = async (req, res = response) => {
 	const { limit = 10, skip = 0 } = req.query;
 	const askActiveUsers = { status: true };
 
@@ -22,7 +22,17 @@ const usersGetController = async (req, res = response) => {
 	});
 };
 
-const usersPostController = async (req, res = response) => {
+const getUserByIdController = async (req, res = response) => {
+	const { id } = req.params;
+
+	const user = await User.findById(id).and([{ status: true }]);
+
+	if (!user) return res.json({ ok: false, msg: "Category does not exist." });
+
+	return res.json({ ok: true, user });
+};
+
+const createUserController = async (req, res = response) => {
 	const { name, lastName, email, password, role } = req.body;
 
 	//Instance new user
@@ -48,7 +58,7 @@ const usersPostController = async (req, res = response) => {
 	});
 };
 
-const usersPutController = async (req, res = response) => {
+const updateUserController = async (req, res = response) => {
 	const { id } = req.params;
 	const { _id, password, email, ...dataToUpdate } = req.body;
 
@@ -76,7 +86,7 @@ const usersPutController = async (req, res = response) => {
 	}
 };
 
-const usersDeleteController = async (req, res = response) => {
+const deleteUserController = async (req, res = response) => {
 	const { id } = req.params;
 
 	try {
@@ -101,8 +111,9 @@ const usersDeleteController = async (req, res = response) => {
 };
 
 module.exports = {
-	usersGetController,
-	usersPostController,
-	usersPutController,
-	usersDeleteController,
+	getUsersController,
+	getUserByIdController,
+	createUserController,
+	updateUserController,
+	deleteUserController,
 };

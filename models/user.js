@@ -20,11 +20,17 @@ const UserSchema = Schema({
 	role: {
 		type: String,
 		required: true,
+		default: "CLIENT",
 		enum: ["ADMIN", "CLIENT"],
 	},
 	status: {
 		type: Boolean,
 		required: true,
+		default: true,
+	},
+	img: {
+		type: String,
+		required: false,
 	},
 });
 
